@@ -1,0 +1,48 @@
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+
+# Visual Studio Code
+.vscode
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.cache
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+msbuild.log
+msbuild.err
+msbuild.wrn
+obj/*
+bin/*
+EntityFramework.ServiceBus/bin/*
+appsettings.dev.json
+# Visual Studio 2015
+.vs/*
+EntityFramework.ServiceBusConsole/obj/Debug/netcoreapp2.2/EntityFramework.ServiceBusConsole.csprojAssemblyReference.cache
+EntityFramework.ServiceBusConsole/obj/Debug/netcoreapp2.2/EntityFramework.ServiceBusConsole.assets.cache
+EntityFramework.ServiceBusConsole/obj/Debug/netcoreapp2.2/EntityFramework.ServiceBusConsole.csproj.CoreCompileInputs.cache
+EntityFramework.ServiceBusConsole/obj/Debug/netcoreapp2.2/EntityFramework.ServiceBusConsole.csproj.FileListAbsolute.txt
+EntityFramework.ServiceBus/obj/Debug/netstandard2.0/EntityFramework.ServiceBus.assets.cache
+EntityFramework.ServiceBus/obj/Debug/netstandard2.0/EntityFramework.ServiceBus.csproj.CoreCompileInputs.cache
+EntityFramework.ServiceBus/obj/Debug/netstandard2.0/EntityFramework.ServiceBus.csproj.FileListAbsolute.txt
+EntityFramework.ServiceBus/obj/Debug/netstandard2.0/EntityFramework.ServiceBus.csprojAssemblyReference.cache
+EntityFramework.ServiceBus/bin/Debug/netstandard2.0/EntityFramework.ServiceBus.deps.json
+EntityFramework.ServiceBus/obj/EntityFramework.ServiceBus.csproj.nuget.cache
+EntityFramework.ServiceBus/obj/EntityFramework.ServiceBus.csproj.nuget.dgspec.json
+EntityFramework.ServiceBus/obj/EntityFramework.ServiceBus.csproj.nuget.g.props
