@@ -1,14 +1,54 @@
 # MQTT Bridge
 
-Bridge two MQTT Brokers to pass topic messages between them
+Bridge two MQTT Brokers to pass topic messages between them. Acts as a client on both brokers
+rather than broker-broker bridge ala Mosquitto.
+
+The idea is to bridge between physical-physical brokers or physical-cloud brokers.
+
+Bridge can be one-way (primary > secondary) or two-way with sync between brokers.
+
+Topics can be filtered for each broker for messages bridged.
 
 ## Getting Started
 
 1. Run the app by entering the following command in the command shell:
 
    ```console
-    dotnet run
+    dotnet run -- --config=config.json
    ```
+
+2. CLI
+
+Can configure cli via config file in yaml/json. Or by passing values directly
+
+```bash
+MqttBridge.exe --config=config.json
+```
+
+```bash
+MqttBridge.exe --primary=localhost:1883 --secondary=localhost:1884
+```
+
+3. Library
+
+Bridge can be configured with primary & secondary brokers.
+
+```c#
+   var primaryOptions = new MqttClientOptionsBuilder()
+                .WithClientId("Primary")
+                .WithTcpServer("localhost", 1883)
+                .WithCleanSession();
+   var bridgeOptions = new BridgeOptions
+   {
+         PrimaryOptions = primaryOptions.Build(),
+         SecondaryOptions = secondaryOptions.Build(),
+         PrimaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("primary/topic").Build()}
+         SecondaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("secondary/topic").Build()}
+         SyncMode = true
+   };
+   var bridge = new Bridge(bridgeOptions);
+   await bridge.ConnectAsync(CancellationToken.None); 
+```
 
 ### Prerequisites
 
@@ -18,7 +58,9 @@ Install the following:
 
 ### Installing
 
+MqttBridgeCli.exe from releases
 
+Nuget MqttBridge from packages
 
 ## Running the tests
 
@@ -53,7 +95,7 @@ dotnet publish
 
 ## Built With
 
-* [TerminalUI](https://github.com/migueldeicaza/gui.cs) - Terminal based ui
+* [MqttNet](https://github.com/migueldeicaza/gui.cs) - MqttNet
 
 ## Contributing
 
