@@ -1,17 +1,18 @@
 using System;
+using System.Collections.Generic;
 using CommandLine;
 using YamlDotNet;
 using YamlDotNet.Serialization;
 
 namespace MqttBridgeCli
 {
-    interface IConfigOptions
+    public interface IConfigOptions
     {
         [Option("config", SetName = "config")]
         string Config { get; set; }
     }
 
-    interface IServerOptions
+    public interface IServerOptions
     {
         [Option("primary", SetName = "config", HelpText = "Primary Mqtt broker address:port")]
         string Primary { get; set; }
@@ -32,7 +33,7 @@ namespace MqttBridgeCli
         string SecondaryPassword { get; set; }
     }
 
-    class Options : IServerOptions, IConfigOptions
+    public class Options : IServerOptions, IConfigOptions
     {
         // server options
         public string Primary { get; set; }
@@ -42,6 +43,12 @@ namespace MqttBridgeCli
         public string SecondaryUsername { get; set; }
         public string SecondaryPassword { get; set; }
 
+        [Option("primaryTopicFilters", Separator=':')]
+        public IEnumerable<string> PrimaryTopicFilters { get; set; } = new List<string>();
+        [Option("secondaryTopicFilters", Separator=':')]
+        public IEnumerable<string> SecondaryTopicFilters { get; set; } = new List<string>();
+
+        [YamlIgnore]
         public string Config { get; set; }
 
         [Option("sync", Default = false, HelpText = "Synchronize between brokers")]

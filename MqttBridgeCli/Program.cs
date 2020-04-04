@@ -66,6 +66,21 @@ namespace MqttBridgeCli
                 SyncMode = opts.Sync
             };
 
+            if (opts.PrimaryTopicFilters.Any())
+            {
+                var primaryFilters = opts.PrimaryTopicFilters
+                    .Select(f => new TopicFilterBuilder().WithTopic(f).Build())
+                    .ToArray();
+                bridgeOptions.PrimaryFilters = primaryFilters;
+            }
+            if (opts.SecondaryTopicFilters.Any())
+            {
+                var secondaryFilters = opts.SecondaryTopicFilters
+                    .Select(f => new TopicFilterBuilder().WithTopic(f).Build())
+                    .ToArray();
+                bridgeOptions.SecondaryFilters = secondaryFilters;
+            }
+
             _bridge = new Bridge(bridgeOptions);
             
             try
@@ -101,7 +116,7 @@ namespace MqttBridgeCli
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
-
+            
             Options result = null;
             try
             {
