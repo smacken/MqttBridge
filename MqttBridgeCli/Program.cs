@@ -17,6 +17,7 @@ namespace MqttBridgeCli
 {
     class Program
     {
+        private static Bridge _bridge;
         static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -24,11 +25,14 @@ namespace MqttBridgeCli
                 .WriteTo.Console()
                 .CreateLogger();
             CommandLine.Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(RunOptions)
-                .WithNotParsed(HandleParseError);
+                .MapResult(async options => await RunOptions(options), _ => Task.FromResult(1));
+
+            Console.WriteLine("Press any key to exit.");
+            Console.ReadLine();
+            _bridge.DisconnectAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter();
         }
         
-        static void RunOptions(Options opts)
+        static async Task<int> RunOptions(Options opts)
         {
             if (!string.IsNullOrEmpty(opts.Config))
                 opts = opts.Config.EndsWith(".yaml") ? ReadYaml(opts.Config) : ReadJson(opts.Config);
@@ -49,7 +53,7 @@ namespace MqttBridgeCli
                 primaryOptions = primaryOptions.WithCredentials(opts.PrimaryUsername, opts.PrimaryPassword);
 
             var secondaryOptions = new MqttClientOptionsBuilder()
-                .WithClientId("Primary")
+                .WithClientId("Secondary")
                 .WithTcpServer(secondaryPath, secondaryPort)
                 .WithCleanSession();
             if (opts.SecondaryUsername != null && opts.SecondaryPassword != null)
@@ -61,8 +65,19 @@ namespace MqttBridgeCli
                 SecondaryOptions = secondaryOptions.Build(),
                 SyncMode = opts.Sync
             };
-            var bridge = new Bridge(bridgeOptions);
-            bridge.ConnectAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter();
+
+            _bridge = new Bridge(bridgeOptions);
+            
+            try
+            {
+                await _bridge.ConnectAsync(CancellationToken.None);   
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error(ex.Message);
+                return 1;
+            }
+            return 0;
         }
 
         static void HandleParseError(IEnumerable<Error> errors) => Log.Error(string.Join(" ", errors.Select(e => e.ToString())));
@@ -87,7 +102,17 @@ namespace MqttBridgeCli
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
-            var result = deserializer.Deserialize<Options>(text);
+            Options result = null;
+            try
+            {
+                result = deserializer.Deserialize<Options>(text);    
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
+            
             return result;
         }
     }

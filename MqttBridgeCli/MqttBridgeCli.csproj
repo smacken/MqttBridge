@@ -18,6 +18,11 @@
     <ProjectReference Include="..\MqttBridge\MqttBridge.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="*.yaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Include="*.json, *.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

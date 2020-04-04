@@ -4,5 +4,6 @@
     "primaryPass": "dev",
     "secondary": "localhost:1884",
     "secondaryUser": "localhost",
-    "secondaryPass": "dev"
+    "secondaryPass": "dev",
+    "sync": true
 }

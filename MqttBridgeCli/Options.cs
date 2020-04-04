@@ -1,5 +1,7 @@
 using System;
 using CommandLine;
+using YamlDotNet;
+using YamlDotNet.Serialization;
 
 namespace MqttBridgeCli
 {
@@ -47,6 +49,7 @@ namespace MqttBridgeCli
 
         // Omitting long name, defaults to name of property, ie "--verbose"
         [Option(Default = false, HelpText = "Prints all messages to standard output.")]
+        [YamlIgnore]
         public bool Verbose { get; set; }
     }
 }

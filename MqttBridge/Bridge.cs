@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
@@ -13,7 +12,6 @@ using Polly;
 
 namespace MqttBridge
 {
-
     public class Bridge
     {
         public IMqttClient PrimaryClient { get; private set; }
@@ -21,6 +19,7 @@ namespace MqttBridge
         public BridgeOptions Options { get; set; }
         public Bridge(BridgeOptions options)
         {
+            Options = options;
             var factory = new MqttFactory();
             PrimaryClient = factory.CreateMqttClient(new MqttNetLogger("PrimaryClient"));
             SecondaryClient = factory.CreateMqttClient(new MqttNetLogger("SecondaryClient"));
@@ -32,6 +31,14 @@ namespace MqttBridge
             MQTTnet.Client.Connecting.MqttClientAuthenticateResult connectPrimary = null;
             if (!PrimaryClient.IsConnected)
             {
+                PrimaryClient.UseConnectedHandler(async e =>
+                {
+                    var primaryFilters = Options.PrimaryFilters != null && Options.PrimaryFilters.Any() 
+                        ? Options.PrimaryFilters 
+                        : new TopicFilter[] { new TopicFilterBuilder().WithTopic("#").Build() };
+                    await PrimaryClient.SubscribeAsync(primaryFilters);
+                });
+
                 connectPrimary = await PrimaryClient.ConnectAsync(Options.PrimaryOptions, cancelToken);
                 if(connectPrimary.ResultCode != MqttClientConnectResultCode.Success)
                     throw new ArgumentException("PrimaryOptions, could not connect to primary server.");
@@ -77,14 +84,6 @@ namespace MqttBridge
                 });
             });
 
-            PrimaryClient.UseConnectedHandler(async e =>
-            {
-                var primaryFilters = Options.PrimaryFilters.Any() 
-                    ? Options.PrimaryFilters 
-                    : new TopicFilter[] { new TopicFilterBuilder().WithTopic("#").Build() };
-                await PrimaryClient.SubscribeAsync(primaryFilters);
-            });
-
             PrimaryClient.UseApplicationMessageReceivedHandler(e =>
             {
                 var message = new MqttApplicationMessageBuilder()
@@ -104,7 +103,7 @@ namespace MqttBridge
             {
                 SecondaryClient.UseConnectedHandler(async e =>
                 {
-                    var secondaryFilters = Options.SecondaryFilters.Any()
+                    var secondaryFilters = Options.SecondaryFilters != null && Options.SecondaryFilters.Any()
                         ? Options.SecondaryFilters
                         : new TopicFilter[] { new TopicFilterBuilder().WithTopic("#").Build() };
                     await SecondaryClient.SubscribeAsync(secondaryFilters);
