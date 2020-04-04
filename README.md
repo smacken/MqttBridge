@@ -1,6 +1,23 @@
 # MQTT Bridge
 
-Bridge two MQTT Brokers to pass topic messages between them
+Bridge two MQTT Brokers to pass topic messages between them. Acts as a client on both brokers
+rather than broker-broker ala Mosquitto.
+
+The idea is to bridge between physical-physical brokers or physical-cloud brokers.
+
+Bridge can be one-way (primary > secondary) or two-way with sync between brokers.
+
+Topics can be filtered for each broker for messages bridged.
+
+Can configure cli via config file in yaml/json. Or by passing values directly
+
+```bash
+MqttBridge.exe --config=config.json
+```
+
+```bash
+MqttBridge.exe --primary=localhost:1883 --secondary=localhost:1884
+```
 
 ## Getting Started
 
