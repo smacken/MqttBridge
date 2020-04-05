@@ -21,34 +21,34 @@ Topics can be filtered for each broker for messages bridged.
 
 Can configure cli via config file in yaml/json. Or by passing values directly
 
-```bash
-MqttBridge.exe --config=config.json
-```
+   ```console
+   MqttBridge.exe --config=config.json
+   ```
 
-```bash
-MqttBridge.exe --primary=localhost:1883 --secondary=localhost:1884
-```
+   ```console
+   MqttBridge.exe --primary=localhost:1883 --secondary=localhost:1884
+   ```
 
 3. Library
 
 Bridge can be configured with primary & secondary brokers.
 
-```c#
-   var primaryOptions = new MqttClientOptionsBuilder()
-                .WithClientId("Primary")
-                .WithTcpServer("localhost", 1883)
-                .WithCleanSession();
-   var bridgeOptions = new BridgeOptions
-   {
-         PrimaryOptions = primaryOptions.Build(),
-         SecondaryOptions = secondaryOptions.Build(),
-         PrimaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("primary/topic").Build()}
-         SecondaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("secondary/topic").Build()}
-         SyncMode = true
-   };
-   var bridge = new Bridge(bridgeOptions);
-   await bridge.ConnectAsync(CancellationToken.None); 
-```
+   ```c#
+      var primaryOptions = new MqttClientOptionsBuilder()
+                  .WithClientId("Primary")
+                  .WithTcpServer("localhost", 1883)
+                  .WithCleanSession();
+      var bridgeOptions = new BridgeOptions
+      {
+            PrimaryOptions = primaryOptions.Build(),
+            SecondaryOptions = secondaryOptions.Build(),
+            PrimaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("primary/topic").Build()}
+            SecondaryFilters = new TopicFilter[] {new TopicFilterBuilder().WithTopic("secondary/topic").Build()}
+            SyncMode = true
+      };
+      var bridge = new Bridge(bridgeOptions);
+      await bridge.ConnectAsync(CancellationToken.None); 
+   ```
 
 ### Prerequisites
 

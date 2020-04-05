@@ -4,6 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+      <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+      <PublishSingleFile>true</PublishSingleFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <PublishTrimmed>true</PublishTrimmed>
+    </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MQTTnet" Version="3.0.8" />
     <PackageReference Include="Polly" Version="7.2.0" />
