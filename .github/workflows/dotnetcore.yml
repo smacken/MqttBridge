@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        source-url: https://nuget.pkg.github.com/smacken/index.json
     - name: Install dependencies
       run: dotnet restore
     - name: Generate build number
@@ -30,8 +30,8 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Build NuGet package
       run: dotnet pack MqttBridge\MqttBridge.csproj -c Release -o .\dist /p:Version=0.1.${{steps.buildnumber.outputs.build_number}}
-    - name: Install NuGet client
-      uses: warrenbuckley/Setup-Nuget@v1
+    #- name: Install NuGet client
+    #  uses: warrenbuckley/Setup-Nuget@v1
     #- name: Add private GitHub registry to NuGet
     #  run: nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/smacken/index.json -Username smacken -Password ${{ secrets.GITHUB_TOKEN }}
     - name: Push generated package to GitHub registry
