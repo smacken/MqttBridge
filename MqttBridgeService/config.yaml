@@ -1,0 +1,9 @@
+---
+primary: 'localhost:1883'
+primaryUsername: localhost
+primaryPassword: dev
+secondary: "localhost:1884"
+secondaryUsername: localhost
+secondaryPassword: dev
+syncMode: true
+...
