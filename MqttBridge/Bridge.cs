@@ -28,7 +28,7 @@ namespace MqttBridge
         public async Task<MQTTnet.Client.Connecting.MqttClientAuthenticateResult> ConnectAsync(CancellationToken cancellationToken)
         {
             var cancelToken = cancellationToken != null ? cancellationToken : CancellationToken.None;
-            MQTTnet.Client.Connecting.MqttClientAuthenticateResult connectPrimary = null;
+            MqttClientAuthenticateResult connectPrimary = null;
             if (!PrimaryClient.IsConnected)
             {
                 PrimaryClient.UseConnectedHandler(async e =>
@@ -90,13 +90,22 @@ namespace MqttBridge
                     .WithTopic(e.ApplicationMessage.Topic)
                     .WithPayload(e.ApplicationMessage.Payload);
                 if (e.ApplicationMessage.Retain) message = message.WithRetainFlag();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.ExactlyOnce)
-                    message = message.WithExactlyOnceQoS();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtLeastOnce)
-                    message = message.WithAtLeastOnceQoS();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtMostOnce)
-                    message = message.WithAtMostOnceQoS();
-                Task.Run(() => SecondaryClient.PublishAsync(message.Build(), CancellationToken.None));
+                switch (e.ApplicationMessage.QualityOfServiceLevel)
+                {
+                    case MqttQualityOfServiceLevel.ExactlyOnce:
+                        message = message.WithExactlyOnceQoS();
+                        break;
+                    case MqttQualityOfServiceLevel.AtLeastOnce:
+                        message = message.WithAtLeastOnceQoS();
+                        break;
+                    case MqttQualityOfServiceLevel.AtMostOnce:
+                        message = message.WithAtMostOnceQoS();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                Task.Run(() => SecondaryClient.PublishAsync(message.Build(), cancelToken), cancelToken);
             });
 
             if (Options.SyncMode)
@@ -115,13 +124,22 @@ namespace MqttBridge
                         .WithTopic(e.ApplicationMessage.Topic)
                         .WithPayload(e.ApplicationMessage.Payload);
                     if (e.ApplicationMessage.Retain) message = message.WithRetainFlag();
-                    if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.ExactlyOnce)
-                        message = message.WithExactlyOnceQoS();
-                    if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtLeastOnce)
-                        message = message.WithAtLeastOnceQoS();
-                    if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtMostOnce)
-                        message = message.WithAtMostOnceQoS();
-                    Task.Run(() => PrimaryClient.PublishAsync(message.Build(), CancellationToken.None));
+                    switch (e.ApplicationMessage.QualityOfServiceLevel)
+                    {
+                        case MqttQualityOfServiceLevel.ExactlyOnce:
+                            message = message.WithExactlyOnceQoS();
+                            break;
+                        case MqttQualityOfServiceLevel.AtLeastOnce:
+                            message = message.WithAtLeastOnceQoS();
+                            break;
+                        case MqttQualityOfServiceLevel.AtMostOnce:
+                            message = message.WithAtMostOnceQoS();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    Task.Run(() => PrimaryClient.PublishAsync(message.Build(), cancelToken), cancelToken);
                 });
             }
             return connectPrimary;

@@ -78,13 +78,22 @@ namespace MqttBridgeIotHub
                     .WithTopic(e.ApplicationMessage.Topic)
                     .WithPayload(e.ApplicationMessage.Payload);
                 if (e.ApplicationMessage.Retain) message = message.WithRetainFlag();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.ExactlyOnce)
-                    message = message.WithExactlyOnceQoS();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtLeastOnce)
-                    message = message.WithAtLeastOnceQoS();
-                if (e.ApplicationMessage.QualityOfServiceLevel == MqttQualityOfServiceLevel.AtMostOnce)
-                    message = message.WithAtMostOnceQoS();
-                Task.Run(async () => await SendHubEventAsync(e.ClientId, message.Build()));
+                switch (e.ApplicationMessage.QualityOfServiceLevel)
+                {
+                    case MqttQualityOfServiceLevel.ExactlyOnce:
+                        message = message.WithExactlyOnceQoS();
+                        break;
+                    case MqttQualityOfServiceLevel.AtLeastOnce:
+                        message = message.WithAtLeastOnceQoS();
+                        break;
+                    case MqttQualityOfServiceLevel.AtMostOnce:
+                        message = message.WithAtMostOnceQoS();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                Task.Run(async () => await SendHubEventAsync(e.ClientId, message.Build()), cancelToken);
             });
 
             await ReceiveHubMessagesAsync().ConfigureAwait(false);
@@ -125,16 +134,11 @@ namespace MqttBridgeIotHub
                     .WithPayload(receivedMessage.GetBytes());
                 string payload = Encoding.ASCII.GetString(receivedMessage.GetBytes());
                 Console.WriteLine("\t{0}> Received message: {1}", DateTime.Now.ToLocalTime(), payload);
-
                 if (receivedMessage.Properties.ContainsKey("topic"))
-                {
                     message.WithTopic(receivedMessage.Properties["topic"]);
-                }
                 var keyExclude = new string[] { "topic", "clientId" };
                 foreach (var prop in receivedMessage.Properties.Where(k => !keyExclude.Contains(k.Key)))
-                {
                     message.WithUserProperty(prop.Key, prop.Value);
-                }
                 await LocalClient.PublishAsync(message.Build(), CancellationToken.None);
                 await DeviceClient.CompleteAsync(receivedMessage).ConfigureAwait(false);
             }

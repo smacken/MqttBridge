@@ -17,9 +17,7 @@ Topics can be filtered for each broker for messages bridged.
     dotnet run -- --config=config.json
    ```
 
-2. CLI
-
-Can configure cli via config file in yaml/json. Or by passing values directly
+2. CLI - Can configure cli via config file in yaml/json. Or by passing values directly
 
    ```console
    MqttBridge.exe --config=config.json
@@ -29,9 +27,7 @@ Can configure cli via config file in yaml/json. Or by passing values directly
    MqttBridge.exe --primary=localhost:1883 --secondary=localhost:1884
    ```
 
-3. Library
-
-Bridge can be configured with primary & secondary brokers.
+3. Library - Bridge can be configured with primary & secondary brokers.
 
    ```c#
       var primaryOptions = new MqttClientOptionsBuilder()
