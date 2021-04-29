@@ -1,0 +1,42 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "17:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Costura.Fody
+    versions:
+    - 5.0.2
+    - 5.1.0
+    - 5.2.0
+  - dependency-name: YamlDotNet
+    versions:
+    - 10.0.0
+    - 10.1.0
+    - 11.0.1
+    - 11.1.0
+    - 9.1.4
+  - dependency-name: Fody
+    versions:
+    - 6.3.0
+    - 6.4.0
+    - 6.5.0
+  - dependency-name: Microsoft.Azure.Devices.Client
+    versions:
+    - 1.34.0
+    - 1.35.0
+    - 1.36.0
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.8.3
+    - 16.9.1
+  - dependency-name: MQTTnet
+    versions:
+    - 3.0.13
+    - 3.0.14
+  - dependency-name: coverlet.collector
+    versions:
+    - 3.0.2
